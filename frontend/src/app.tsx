@@ -1,7 +1,9 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { ApplicationShell } from './components/navigation/application-shell'
-import { Avatar } from './components/ui/avatar'
-import { Button } from './components/ui/button'
+import { Bell } from 'lucide-react'
+import { GlobalSearch } from './components/navigation/global-search'
+import { AccountMenu } from './auth/account-menu'
+import { usePermissionPreview } from './operations/permissions'
 import { Workspace } from './templates/workspace'
 import { DashboardPage } from './routes/dashboard-page'
 import { routeItems, routePath, type ApplicationRoute } from './routes/route-config'
@@ -14,10 +16,6 @@ import { AccountSecurityPage } from './auth/account-security-page'
 import { ProvisionUserPage } from './auth/provision-user-page'
 import './auth/auth-ui.css'
 
-const ListPage = lazy(() => import('./routes/list-page').then(module => ({ default: module.ListPage })))
-const DetailPage = lazy(() => import('./routes/detail-page').then(module => ({ default: module.DetailPage })))
-const FormPage = lazy(() => import('./routes/form-page').then(module => ({ default: module.FormPage })))
-const WorkspacePage = lazy(() => import('./routes/workspace-page').then(module => ({ default: module.WorkspacePage })))
 const AdministrationPage = lazy(() => import('./administration/administration-page').then(module => ({ default: module.AdministrationPage })))
 const CustomerPage = lazy(() => import('./customers/customer-page').then(module => ({ default: module.CustomerPage })))
 const CreateApplicationPage = lazy(() => import('./customers/create-application-page').then(module => ({ default: module.CreateApplicationPage })))
@@ -31,6 +29,11 @@ const ReportPage = lazy(() => import('./operations/report-page').then(module => 
 const isCasePath = (path: string) => path === '/cases' || /^\/cases\/[^/]+$/.test(path)
 const isOperationPath = (path: string) => path === '/profile' || /^\/profile\/[^/]+$/.test(path) || /^\/imports\/(attendance|case-stage|users)$/.test(path) || path === '/notifications' || path === '/tasks' || /^\/tasks\/[^/]+$/.test(path) || path === '/finance' || path === '/reports'
 const isAccountPath = (path: string) => path === '/account/security' || path === '/account/provision-user'
+
+function NotificationControl({ onNavigate }: { onNavigate: (path: string) => void }) {
+  const preview = usePermissionPreview()
+  return <button type="button" className="amafh-shell__icon" aria-label="Notifications" disabled={preview.loading || !preview.can('Notifications', 'view')} onClick={() => onNavigate('/notifications')}><Bell size={20} strokeWidth={1.75} aria-hidden="true" /></button>
+}
 
 function routeFromPath(path: string): ApplicationRoute {
   if (path.startsWith('/profile')) return 'profile'
@@ -97,13 +100,9 @@ function AppRouter() {
   const content = pathname === '/account/provision-user' ? <ProvisionUserPage onNavigate={navigatePath} />
     : pathname === '/account/security' ? <AccountSecurityPage onNavigate={navigatePath} />
     : route === 'dashboard' ? <DashboardPage />
-    : route === 'list' ? <ListPage />
-    : route === 'detail' ? <DetailPage />
-    : route === 'form' ? <FormPage />
-    : route === 'workspace' ? <WorkspacePage />
     : route === 'customers' ? isCreateApplicationPath(pathname) ? <CreateApplicationPage onNavigate={navigatePath} /> : <CustomerPage route={customerRouteFromPath(pathname)!} onNavigate={navigatePath} />
     : route === 'cases' ? <CasePage path={pathname} onNavigate={navigatePath} />
-    : route === 'profile' ? <ProfilePage path={pathname} />
+    : route === 'profile' ? <ProfilePage path={pathname} section={new URLSearchParams(location.split('?')[1] ?? '').get('section') ?? ''} />
     : route === 'imports' ? <ImportPage path={pathname} onNavigate={navigatePath} />
     : route === 'notifications' ? <NotificationPage onNavigate={navigatePath} />
     : route === 'tasks' ? <TaskPage path={pathname} onNavigate={navigatePath} />
@@ -111,8 +110,8 @@ function AppRouter() {
     : route === 'reports' ? <ReportPage />
     : <AdministrationPage path={pathname} onNavigate={navigatePath} />
 
-  const account = <div className="amafh-auth-account"><Avatar name={user.name} size="sm" /><span className="amafh-auth-account__name">{user.name}</span><Button variant="secondary" size="compact" onClick={() => navigatePath('/account/security')}>Account security</Button><Button variant="secondary" size="compact" onClick={() => { void signOut() }}>Log out</Button></div>
-  return <ApplicationShell headerTitle={pathname === '/account/provision-user' ? 'Create user account' : isAccountPath(pathname) ? 'Account security' : current.label} items={routeItems.filter(({ id }) => !['list', 'detail', 'form', 'workspace', 'imports'].includes(id)).map(({ id, label }) => ({ id, label }))} activeId={isAccountPath(pathname) ? '' : route} onNavigate={id => navigate(id as ApplicationRoute)} account={account}>
+  const account = <AccountMenu user={user} onNavigate={navigatePath} onLogout={signOut} />
+  return <ApplicationShell headerTitle={pathname === '/account/provision-user' ? 'Create user account' : isAccountPath(pathname) ? 'Account security' : current.label} items={routeItems.filter(({ id }) => id !== 'imports' && id !== 'profile').map(({ id, label }) => ({ id, label }))} activeId={isAccountPath(pathname) ? '' : route} onNavigate={id => navigate(id as ApplicationRoute)} search={<GlobalSearch onNavigate={navigatePath} />} notifications={<NotificationControl onNavigate={navigatePath} />} account={account}>
     <Suspense fallback={<Workspace title={current.label}><div role="status">Loading template…</div></Workspace>}>{content}</Suspense>
   </ApplicationShell>
 }

@@ -1,4 +1,16 @@
 .amafh-auth-loading { min-height: 100vh; display: grid; place-items: center; color: var(--amafh-color-text-secondary); font: 400 14px/20px var(--amafh-font-body); }
 .amafh-auth-account { display: flex; align-items: center; gap: var(--amafh-space-2); min-width: 0; }
 .amafh-auth-account__name { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--amafh-color-text-secondary); font: 500 12px/18px var(--amafh-font-body); }
+.amafh-account-trigger { display: inline-flex; align-items: center; gap: var(--amafh-space-2); max-width: 180px; height: 36px; padding: 0 var(--amafh-space-2); border: 0; border-radius: var(--amafh-radius-md); background: transparent; color: var(--amafh-color-text-secondary); font: 500 12px/18px var(--amafh-font-body); cursor: pointer; }
+.amafh-account-trigger:hover, .amafh-account-trigger[data-state='open'] { background: var(--amafh-color-bg-subtle); }
+.amafh-account-trigger:focus-visible { outline: 2px solid var(--amafh-color-border-focus); outline-offset: 2px; }
+.amafh-account-trigger__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.amafh-account-menu { width: min(288px, calc(100vw - 24px)); padding: var(--amafh-space-2); }
+.amafh-account-menu__header { display: flex; align-items: center; gap: var(--amafh-space-3); min-width: 0; padding: var(--amafh-space-2); }
+.amafh-account-menu__header div { min-width: 0; }
+.amafh-account-menu__header strong, .amafh-account-menu__header span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.amafh-account-menu__header span { color: var(--amafh-color-text-secondary); font: 400 12px/18px var(--amafh-font-body); }
+.amafh-account-menu__separator { height: 1px; margin: var(--amafh-space-2) 0; background: var(--amafh-color-border-default); }
+.amafh-account-menu__item { gap: var(--amafh-space-2); border-radius: var(--amafh-radius-sm); cursor: pointer; }
 @media (max-width: 767px) { .amafh-auth-account__name { display: none; } .amafh-auth-account { gap: var(--amafh-space-1); } }
+@media (max-width: 767px) { .amafh-account-trigger { width: 44px; height: 44px; justify-content: center; padding: 0; } .amafh-account-trigger__name, .amafh-account-trigger > svg { display: none; } }

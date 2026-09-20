@@ -4,7 +4,7 @@ import { Card } from '../components/ui/card'
 import './template-routes.css'
 
 export function TemplateBreadcrumb({ current }: { current: string }) {
-  return <Breadcrumb items={[{ label: 'Templates', href: '/templates/dashboard' }, { label: current }]} />
+  return <Breadcrumb items={[{ label: 'Design system', href: '/_design-system' }, { label: current }]} />
 }
 
 export function Slot({ title, children, className = '' }: { title: string; children?: ReactNode; className?: string }) {

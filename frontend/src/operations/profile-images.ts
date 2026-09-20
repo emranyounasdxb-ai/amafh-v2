@@ -69,13 +69,26 @@ export const apiProfileImagesRepository = {
     const cacheKey = `?v=${Date.now()}`
     return { avatar: urls.avatar ? urls.avatar + cacheKey : '', banner: urls.banner ? urls.banner + cacheKey : '' }
   },
-  async save(userId: string, kind: ProfileImageKind, file: File): Promise<ProfileImages> {
+  async save(userId: string, kind: ProfileImageKind, file: File, onProgress?: (percent: number) => void): Promise<ProfileImages> {
     await validateProfileImage(file)
-    await apiRequest(`/api/v1/users/${encodeURIComponent(userId)}/profile-images/${kind}`, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file })
-    return this.get(userId)
+    await new Promise<void>((resolve, reject) => {
+      const request = new XMLHttpRequest()
+      request.open('PUT', `/api/v1/users/${encodeURIComponent(userId)}/profile-images/${kind}`)
+      request.withCredentials = true
+      request.setRequestHeader('Content-Type', file.type)
+      request.upload.onprogress = event => { if (event.lengthComputable) onProgress?.(Math.round(event.loaded / event.total * 100)) }
+      request.onerror = () => reject(new Error('Could not upload profile image.'))
+      request.onload = () => request.status >= 200 && request.status < 300 ? resolve() : reject(new Error('Could not upload profile image. Check your permissions and try again.'))
+      request.send(file)
+    })
+    const images = await this.get(userId)
+    window.dispatchEvent(new Event('amafh-profile-image-updated'))
+    return images
   },
   async remove(userId: string, kind: ProfileImageKind): Promise<ProfileImages> {
     await apiRequest(`/api/v1/users/${encodeURIComponent(userId)}/profile-images/${kind}`, { method: 'DELETE' })
-    return this.get(userId)
+    const images = await this.get(userId)
+    window.dispatchEvent(new Event('amafh-profile-image-updated'))
+    return images
   },
 }

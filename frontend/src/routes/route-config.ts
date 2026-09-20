@@ -1,13 +1,9 @@
 import { defaultAdministrationPath } from '../administration/admin-routes'
 
-export type ApplicationRoute = 'dashboard' | 'list' | 'detail' | 'form' | 'workspace' | 'customers' | 'cases' | 'administration' | 'profile' | 'imports' | 'notifications' | 'tasks' | 'finance' | 'reports'
+export type ApplicationRoute = 'dashboard' | 'customers' | 'cases' | 'administration' | 'profile' | 'imports' | 'notifications' | 'tasks' | 'finance' | 'reports'
 
 export const routeItems: { id: ApplicationRoute; label: string; path: string }[] = [
   { id: 'dashboard', label: 'Dashboard', path: '/templates/dashboard' },
-  { id: 'list', label: 'List', path: '/templates/list' },
-  { id: 'detail', label: 'Detail', path: '/templates/detail' },
-  { id: 'form', label: 'Form', path: '/templates/form' },
-  { id: 'workspace', label: 'Workspace', path: '/templates/workspace' },
   { id: 'customers', label: 'Customers', path: '/customers' },
   { id: 'cases', label: 'Cases', path: '/cases' },
   { id: 'administration', label: 'Administration', path: defaultAdministrationPath },

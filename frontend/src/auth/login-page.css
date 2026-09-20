@@ -1,6 +1,6 @@
 .amafh-login { min-height: 100vh; display: grid; place-items: center; padding: var(--amafh-space-6); background: var(--amafh-color-bg-canvas); }
 .amafh-login__content { width: min(100%, 420px); }
-.amafh-login__brand { display: block; margin-bottom: var(--amafh-space-6); color: var(--amafh-color-text-brand); font: 700 20px/28px var(--amafh-font-heading); text-align: center; }
+.amafh-login__brand { display: block; width: min(100%, 230px); height: auto; margin: 0 auto var(--amafh-space-6); }
 .amafh-login__card { padding: var(--amafh-space-8); }
 .amafh-login__card h1 { margin: 0; }
 .amafh-login__card > p { margin: var(--amafh-space-2) 0 var(--amafh-space-6); color: var(--amafh-color-text-secondary); font: 400 14px/20px var(--amafh-font-body); }
