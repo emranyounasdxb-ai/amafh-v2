@@ -135,11 +135,11 @@ export function DatePicker({ label, value, onValueChange, min, max, disabled, re
     <label className="amafh-field__label" htmlFor={id}>{label}{required && <span aria-hidden="true"> *</span>}</label>
     <div className="amafh-date-field__entry">
       <input id={id} className="amafh-field__control" value={input} onChange={event => { setInput(event.target.value); setParseError('') }} onBlur={onInputBlur} placeholder="DD MMM YYYY" disabled={disabled} required={required} aria-invalid={Boolean(error || parseError) || undefined} aria-describedby={message ? `${id}-message` : undefined} />
-      <button ref={triggerRef} type="button" aria-label={`Choose ${label.toLowerCase()}`} aria-expanded={open} aria-controls={open ? `${id}-calendar` : undefined} disabled={disabled} onClick={toggle}><CalendarDays size={18} aria-hidden="true" /></button>
+      <button ref={triggerRef} type="button" aria-label={`Choose ${label.toLowerCase()}`} aria-expanded={open} aria-controls={open ? `${id}-calendar` : undefined} disabled={disabled} onClick={toggle}><CalendarDays size={18} aria-hidden="true" strokeWidth={1.75} /></button>
     </div>
     {message && <p id={`${id}-message`} role={error || parseError ? 'alert' : undefined} className={`amafh-field__message ${error || parseError ? 'amafh-field__message--error' : ''}`}>{message}</p>}
     {open && <div id={`${id}-calendar`} className="amafh-calendar" role="group" aria-label={`${label} calendar`}>
-      <div className="amafh-calendar__header"><button type="button" aria-label="Previous month" onClick={() => changeMonth(-1)}><ChevronLeft size={18} /></button><strong aria-live="polite">{monthName}</strong><button type="button" aria-label="Next month" onClick={() => changeMonth(1)}><ChevronRight size={18} /></button></div>
+      <div className="amafh-calendar__header"><button type="button" aria-label="Previous month" onClick={() => changeMonth(-1)}><ChevronLeft size={18} strokeWidth={1.75} /></button><strong aria-live="polite">{monthName}</strong><button type="button" aria-label="Next month" onClick={() => changeMonth(1)}><ChevronRight size={18} strokeWidth={1.75} /></button></div>
       <div className="amafh-calendar__weekdays">{weekdays.map(day => <span key={day}>{day}</span>)}</div>
       <div className="amafh-calendar__days">{days.map(date => {
         const iso = toIso(date)

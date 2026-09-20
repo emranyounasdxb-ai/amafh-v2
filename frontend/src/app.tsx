@@ -112,7 +112,7 @@ function AppRouter() {
     : <AdministrationPage path={pathname} onNavigate={navigatePath} />
 
   const account = <div className="amafh-auth-account"><Avatar name={user.name} size="sm" /><span className="amafh-auth-account__name">{user.name}</span><Button variant="secondary" size="compact" onClick={() => navigatePath('/account/security')}>Account security</Button><Button variant="secondary" size="compact" onClick={() => { void signOut() }}>Log out</Button></div>
-  return <ApplicationShell headerTitle={pathname === '/account/provision-user' ? 'Create user account' : isAccountPath(pathname) ? 'Account security' : current.label} items={routeItems.map(({ id, label }) => ({ id, label }))} activeId={isAccountPath(pathname) ? '' : route} onNavigate={id => navigate(id as ApplicationRoute)} account={account}>
+  return <ApplicationShell headerTitle={pathname === '/account/provision-user' ? 'Create user account' : isAccountPath(pathname) ? 'Account security' : current.label} items={routeItems.filter(({ id }) => !['list', 'detail', 'form', 'workspace', 'imports'].includes(id)).map(({ id, label }) => ({ id, label }))} activeId={isAccountPath(pathname) ? '' : route} onNavigate={id => navigate(id as ApplicationRoute)} account={account}>
     <Suspense fallback={<Workspace title={current.label}><div role="status">Loading template…</div></Workspace>}>{content}</Suspense>
   </ApplicationShell>
 }

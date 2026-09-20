@@ -43,7 +43,8 @@ describe('generic DataTable', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Columns' }))
     const panel = document.getElementById('test-controls-columns')!
-    fireEvent.change(within(panel).getByRole('combobox', { name: 'Pin Owner' }), { target: { value: 'left' } })
+    fireEvent.keyDown(within(panel).getByRole('combobox', { name: 'Pin Owner' }), { key: 'ArrowDown' })
+    fireEvent.click(screen.getByRole('option', { name: 'Pin left' }))
     expect(preferences.getSaved()?.pinned.owner).toBe('left')
     fireEvent.click(within(panel).getByRole('checkbox', { name: 'Item' }))
     expect(preferences.getSaved()?.hidden).toContain('item')

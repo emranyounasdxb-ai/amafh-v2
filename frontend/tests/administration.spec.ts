@@ -37,7 +37,7 @@ for (const width of [1440, 1024, 390]) {
         await expect(page.getByLabel(`${label} placeholder`)).toBeVisible()
         await expect(page.getByRole('table')).toHaveCount(0)
       }
-      await expect(page.getByRole('navigation', { name: 'Administration navigation' }).getByRole('button')).toHaveCount(11)
+      await expect(page.getByRole('navigation', { name: 'Administration navigation' }).getByRole('button')).toHaveCount(12)
       await expect(page.getByRole('navigation', { name: 'Administration navigation' }).getByRole('button', { name: label, exact: true })).toHaveAttribute('aria-current', 'page')
       await expect(page.locator('.amafh-shell__nav-item[aria-label="Administration"]')).toHaveAttribute('aria-current', 'page')
       expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1), `${label} overflows at ${width}px`).toBe(false)
@@ -51,6 +51,10 @@ for (const width of [1440, 1024, 390]) {
       const activeBox = await active.boundingBox()
       expect(box && activeBox && activeBox.x >= box.x - 1 && activeBox.x + activeBox.width <= box.x + box.width + 1).toBe(true)
     }
+    await page.getByRole('navigation', { name: 'Administration navigation' }).getByRole('button', { name: 'CSV Imports' }).click()
+    await expect(page).toHaveURL(/\/imports\/attendance$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'CSV Imports' })).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)).toBe(false)
   })
 }
 

@@ -23,13 +23,15 @@ for (const width of [1440, 1024, 390]) {
       expect(overflow.width > overflow.viewport + 1, `${route.path} overflows at ${width}px: ${JSON.stringify(overflow)}`).toBe(false)
     }
 
-    if (width === 1440) {
-      await page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('button', { name: 'List' }).click()
-      await expect(page).toHaveURL(/\/templates\/list$/)
-      await expect(page.getByRole('heading', { level: 1, name: 'List' })).toBeVisible()
-      await page.goBack()
-      await expect(page).toHaveURL(/\/templates\/workspace$/)
-      await expect(page.getByRole('heading', { level: 1, name: 'Workspace' })).toBeVisible()
+    if (width === 390) await page.getByRole('button', { name: 'Open navigation' }).click()
+    const primary = page.getByRole('navigation', { name: 'Primary navigation' })
+    await expect(primary.getByRole('button')).toHaveCount(9)
+    for (const label of ['Dashboard', 'Customers', 'Cases', 'Administration', 'Notifications', 'Tasks', 'Finance', 'Reports', 'Profile']) {
+      await expect(primary.getByRole('button', { name: label, exact: true })).toBeVisible()
     }
+    for (const label of ['List', 'Detail', 'Form', 'Workspace', 'CSV Imports']) {
+      await expect(primary.getByRole('button', { name: label, exact: true })).toHaveCount(0)
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)).toBe(false)
   })
 }

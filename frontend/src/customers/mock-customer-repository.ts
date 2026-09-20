@@ -63,7 +63,7 @@ export const mockCustomerRepository: CustomerRepository = {
     const updated: CustomerRecord = { ...draft, id, status, createdAt: previous.createdAt, updatedAt: now, history: [...previous.history, { id: crypto.randomUUID(), label: status !== previous.status ? `Status changed to ${status}` : 'Customer updated', at: now }] }
     write({ ...store, customers: store.customers.map(item => item.id === id ? updated : item) }); return updated
   },
-  async remove(id, actorId) { await requireAction('Customers', 'delete', actorId); const store = read(); const customer = store.customers.find(item => item.id === id); if (!customer) throw new Error('Customer was not found.'); const count = store.applications.filter(item => item.customerId === id).length; if (count) throw new Error(`Cannot delete ${customerName(customer)}: ${count} related ${count === 1 ? 'Application/Case depends' : 'Applications/Cases depend'} on this customer.`); write({ ...store, customers: store.customers.filter(item => item.id !== id) }) },
+  async remove(id, actorId) { await requireAction('Customers', 'delete', actorId); const store = read(); const customer = store.customers.find(item => item.id === id); if (!customer) throw new Error('Customer was not found.'); const count = store.applications.filter(item => item.customerId === id).length; if (count) throw new Error(`Cannot delete ${customerName(customer)}: ${count} related ${count === 1 ? 'Case depends' : 'Cases depend'} on this customer.`); write({ ...store, customers: store.customers.filter(item => item.id !== id) }) },
 }
 export const mockApplicationRepository: ApplicationRepository = {
   async list() { return read().applications },

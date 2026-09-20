@@ -66,18 +66,18 @@ export function ApplicationShell({ brand = 'AMAFH v2', compactBrand = 'A', mobil
 
   return <div className={`amafh-shell ${desktopCollapsed ? 'amafh-shell--desktop-collapsed' : ''} ${tabletExpanded ? 'amafh-shell--tablet-expanded' : ''} ${mobileOpen ? 'amafh-shell--mobile-open' : ''}`}>
     <aside className="amafh-shell__sidebar" role={mobileOpen ? 'dialog' : undefined} aria-modal={mobileOpen || undefined} aria-label="Application navigation" onKeyDown={onSidebarKeyDown}>
-      <div className="amafh-shell__brand"><strong className="amafh-shell__brand-full">{brand}</strong><strong className="amafh-shell__brand-compact">{compactBrand}</strong><button ref={closeRef} className="amafh-shell__icon amafh-shell__mobile-close" type="button" aria-label="Close navigation" onClick={() => setMobileOpen(false)}><X size={18} aria-hidden="true" /></button></div>
+      <div className="amafh-shell__brand"><strong className="amafh-shell__brand-full">{brand}</strong><strong className="amafh-shell__brand-compact">{compactBrand}</strong><button ref={closeRef} className="amafh-shell__icon amafh-shell__mobile-close" type="button" aria-label="Close navigation" onClick={() => setMobileOpen(false)}><X size={18} aria-hidden="true" strokeWidth={1.75} /></button></div>
       <nav id="amafh-primary-navigation" aria-label="Primary navigation">{navContent}</nav>
     </aside>
     {mobileOpen && <button type="button" className="amafh-shell__scrim" aria-label="Close navigation" onClick={() => setMobileOpen(false)} />}
     <div className="amafh-shell__main" inert={mobileOpen}>
       <header className="amafh-shell__topbar">
-        <button type="button" className="amafh-shell__icon amafh-shell__desktop-menu" aria-label={desktopCollapsed ? 'Expand navigation' : 'Collapse navigation'} aria-controls="amafh-primary-navigation" aria-expanded={!desktopCollapsed} onClick={() => setDesktopCollapsed(value => !value)}><Menu size={20} aria-hidden="true" /></button>
-        <button type="button" className="amafh-shell__icon amafh-shell__tablet-menu" aria-label={tabletExpanded ? 'Collapse navigation' : 'Expand navigation'} aria-controls="amafh-primary-navigation" aria-expanded={tabletExpanded} onClick={() => setTabletExpanded(value => !value)}><Menu size={20} aria-hidden="true" /></button>
-        <button ref={menuRef} type="button" className="amafh-shell__icon amafh-shell__mobile-menu" aria-label="Open navigation" aria-controls="amafh-primary-navigation" aria-expanded={mobileOpen} onClick={() => setMobileOpen(true)}><Menu size={20} aria-hidden="true" /></button>
+        <button type="button" className="amafh-shell__icon amafh-shell__desktop-menu" aria-label={desktopCollapsed ? 'Expand navigation' : 'Collapse navigation'} aria-controls="amafh-primary-navigation" aria-expanded={!desktopCollapsed} onClick={() => setDesktopCollapsed(value => !value)}><Menu size={20} aria-hidden="true" strokeWidth={1.75} /></button>
+        <button type="button" className="amafh-shell__icon amafh-shell__tablet-menu" aria-label={tabletExpanded ? 'Collapse navigation' : 'Expand navigation'} aria-controls="amafh-primary-navigation" aria-expanded={tabletExpanded} onClick={() => setTabletExpanded(value => !value)}><Menu size={20} aria-hidden="true" strokeWidth={1.75} /></button>
+        <button ref={menuRef} type="button" className="amafh-shell__icon amafh-shell__mobile-menu" aria-label="Open navigation" aria-controls="amafh-primary-navigation" aria-expanded={mobileOpen} onClick={() => setMobileOpen(true)}><Menu size={20} aria-hidden="true" strokeWidth={1.75} /></button>
         <strong className="amafh-shell__topbar-title">{headerTitle}</strong><strong className="amafh-shell__topbar-mobile-brand">{mobileBrand}</strong>
         {search && <div className="amafh-shell__search">{search}</div>}
-        <div className="amafh-shell__top-actions">{notifications ?? <Bell size={20} aria-label="Notifications" />}{account ?? <Avatar name="Account" initials="AM" size="sm" />}</div>
+        <div className="amafh-shell__top-actions">{notifications ?? <Bell size={20} aria-label="Notifications" strokeWidth={1.75} />}{account ?? <Avatar name="Account" initials="AM" size="sm" />}</div>
       </header>
       <div className="amafh-shell__content" id="main-content">{children}</div>
     </div>

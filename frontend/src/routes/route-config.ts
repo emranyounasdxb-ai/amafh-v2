@@ -9,7 +9,7 @@ export const routeItems: { id: ApplicationRoute; label: string; path: string }[]
   { id: 'form', label: 'Form', path: '/templates/form' },
   { id: 'workspace', label: 'Workspace', path: '/templates/workspace' },
   { id: 'customers', label: 'Customers', path: '/customers' },
-  { id: 'cases', label: 'Applications / Cases', path: '/cases' },
+  { id: 'cases', label: 'Cases', path: '/cases' },
   { id: 'administration', label: 'Administration', path: defaultAdministrationPath },
   { id: 'profile', label: 'Profile', path: '/profile' },
   { id: 'imports', label: 'CSV Imports', path: '/imports/attendance' },

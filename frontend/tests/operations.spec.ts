@@ -24,6 +24,25 @@ for (const width of [1440, 1024, 390]) test(`operations routes and responsive pe
   await page.goto('/reports'); await expect(page.getByRole('heading', { name: 'Case summary' })).toBeVisible(); await page.getByRole('combobox', { name: 'Bank' }).click(); await page.getByRole('option', { name: 'Sample Bank' }).click(); await expect(page.getByRole('heading', { name: 'Case summary' })).toBeVisible(); await noOverflow(page)
 })
 
+for (const width of [1440, 1024, 390]) test(`Reports use the shared Figma Calendar at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 }); await signIn(page); await grant(page); await page.goto('/reports'); await actor(page)
+  await expect(page.getByRole('heading', { name: 'Reporting & Analytics' })).toBeVisible()
+  const from = page.getByRole('textbox', { name: 'From' })
+  await expect(from).toHaveAttribute('placeholder', 'DD MMM YYYY')
+  await expect(page.getByRole('textbox', { name: 'Until' })).toHaveAttribute('placeholder', 'DD MMM YYYY')
+  await page.getByRole('button', { name: 'Choose from' }).click()
+  const calendar = page.getByRole('group', { name: 'From calendar' })
+  await expect(calendar).toBeVisible()
+  await expect(calendar.getByRole('button', { name: 'Previous month' })).toBeVisible()
+  if (process.env.CAPTURE_REPORT_CALENDAR) await page.screenshot({ path: `test-results/report-calendar-${width}.png` })
+  await noOverflow(page)
+  await calendar.getByRole('button', { name: /, / }).filter({ visible: true }).first().click()
+  await expect(from).not.toHaveValue('')
+  await page.getByRole('button', { name: 'Clear filters' }).click()
+  await expect(from).toHaveValue('')
+  await noOverflow(page)
+})
+
 test('profile upload, CSV preview, Task, notification and report filters work in browser', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 }); await signIn(page); await grant(page)
   await page.goto('/profile/sample-aisha'); await actor(page)

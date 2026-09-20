@@ -49,6 +49,7 @@ export function AdministrationPage({ path, onNavigate }: { path: string; onNavig
 
   const navigation = <nav ref={navigationRef} className="amafh-admin-navigation" aria-label="Administration navigation">
     {administrationAreas.map(item => <button key={item.id} type="button" className="amafh-admin-navigation__item" aria-current={item.id === area.id ? 'page' : undefined} onClick={() => onNavigate(item.path)}>{item.label}</button>)}
+    <button type="button" className="amafh-admin-navigation__item" onClick={() => onNavigate('/imports/attendance')}>CSV Imports</button>
   </nav>
 
   const nested = Boolean(stagesProductId) || (usersRoute && usersRoute.mode !== 'list') || (userTypesRoute && userTypesRoute.mode !== 'list') || (permissionsRoute && permissionsRoute.mode !== 'list') || (organizationRoute && organizationRoute.mode !== 'overview') || (managed && (managed.route.mode !== 'list' || managed.route.kind !== null)) || (approvalRoute && approvalRoute.mode !== 'list') || (auditRoute && auditRoute.mode !== 'list')

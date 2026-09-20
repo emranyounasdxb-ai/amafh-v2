@@ -11,10 +11,17 @@ async function noOverflow(page: Page) { expect(await page.evaluate(() => documen
 for (const width of [1440, 1024, 390]) {
   test(`Case list, permission actions, lock and history at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 }); await signIn(page); await page.evaluate(() => { localStorage.setItem('amafh-v2.mock-permissions.v1', JSON.stringify({ version: 1, permissions: [{ id: 'case-view', domain: 'Cases', action: 'view', description: 'View cases.', enabled: true, userTypeIds: ['sample-type-1'], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }] })); sessionStorage.setItem('amafh-v2.case-preview-actor', 'sample-aisha') }); await page.goto('/cases')
-    const table = page.getByRole('table', { name: 'Applications / Cases' })
+    await expect(page.getByRole('heading', { level: 1, name: 'Cases' })).toBeVisible()
+    await expect(page.getByRole('navigation', { name: 'Breadcrumb' }).getByText('Cases')).toBeVisible()
+    if (width === 390) {
+      await page.getByRole('button', { name: 'Open navigation' }).click()
+      await expect(page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('button', { name: 'Cases' })).toBeVisible()
+      await page.getByRole('button', { name: 'Close navigation' }).first().click()
+    }
+    const table = page.getByRole('table', { name: 'Cases' })
     await expect(table).toBeVisible(); await expect(table.getByRole('row', { name: /CASE-0001/ })).toBeVisible(); await noOverflow(page)
     await page.getByRole('searchbox', { name: 'Search' }).fill('not here'); await expect(page.getByText('No results')).toBeVisible()
-    await page.getByRole('searchbox', { name: 'Search' }).fill(''); await page.getByRole('combobox', { name: 'Status' }).selectOption('Pending SM Approval'); await expect(table.getByRole('row', { name: /CASE-0001/ })).toBeVisible()
+    await page.getByRole('searchbox', { name: 'Search' }).fill(''); await choose(page, 'Status', 'Pending SM Approval'); await expect(table.getByRole('row', { name: /CASE-0001/ })).toBeVisible()
     await table.getByRole('row', { name: /CASE-0001/ }).getByRole('button', { name: 'View' }).click()
     await expect(page.getByRole('heading', { name: 'Case workspace' })).toBeVisible()
     await expect(page.getByText('Pending SM Approval').first()).toBeVisible()

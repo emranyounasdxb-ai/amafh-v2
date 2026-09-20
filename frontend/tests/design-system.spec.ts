@@ -1,6 +1,29 @@
 import { expect, test } from '@playwright/test'
 
 for (const width of [1440, 1024, 390]) {
+  test(`shared Select styling and keyboard behavior at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/_design-system')
+    const trigger = page.getByRole('combobox', { name: 'Select option' })
+    await trigger.focus()
+    await expect(trigger).toBeFocused()
+    await trigger.press('ArrowDown')
+    const option = page.getByRole('option', { name: 'Option two' })
+    await expect(option).toBeVisible()
+    const panel = option.locator('xpath=ancestor::*[contains(@class, "amafh-select-content")]')
+    const box = await panel.boundingBox()
+    expect(box).not.toBeNull()
+    expect(box!.x).toBeGreaterThanOrEqual(0)
+    expect(box!.x + box!.width).toBeLessThanOrEqual(width)
+    if (process.env.CAPTURE_SELECT) await page.screenshot({ path: `test-results/select-${width}.png` })
+    await option.click()
+    await expect(trigger).toContainText('Option two')
+    await trigger.press('ArrowDown')
+    await page.keyboard.press('Escape')
+    await expect(trigger).toBeFocused()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)).toBe(false)
+  })
+
   test(`shared showcase at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 })
     await page.goto('/_design-system')

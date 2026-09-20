@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Badge } from '../../components/ui/badge'
 import { Button } from '../../components/ui/button'
+import { SelectField } from '../../components/ui/select-field'
 import { DataTable, type DataTableColumn } from '../../components/data-table/data-table'
 import { WorkspaceState } from '../../components/feedback/workspace-state'
 import { Dialog } from '../../components/overlays/dialog'
@@ -35,7 +36,7 @@ export function ApprovalModule({ route, onNavigate, repository = mockApprovalRep
   const columns = useMemo<DataTableColumn<ApprovalRecord>[]>(() => [
     { id: 'title', header: 'Title', value: item => item.title, width: 220 }, { id: 'description', header: 'Description', value: item => item.description, width: 310 }, { id: 'status', header: 'Status', value: item => item.status, width: 130, cell: item => <Badge tone={item.status === 'approved' ? 'success' : 'neutral'}>{item.status[0].toUpperCase() + item.status.slice(1)}</Badge> }, { id: 'updated', header: 'Updated', value: item => new Date(item.updatedAt).toLocaleDateString(), width: 150 },
   ], [])
-  if (route.mode === 'list') return <DataTable tableId="administration-approval-centre" caption="Approval Centre" columns={columns} rows={records} rowId={item => item.id} state={loading ? 'loading' : error ? 'error' : 'ready'} error={error} onRetry={() => { void reload() }} onRefresh={() => { void reload() }} filters={item => statusFilter === 'all' || item.status === statusFilter} filterControls={<label className="amafh-managed-filters">Status <select value={statusFilter} onChange={event => setStatusFilter(event.target.value)}><option value="all">All statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></label>} rowActions={item => <Button variant="secondary" size="compact" onClick={() => onNavigate(detailPath(item.id))}>View</Button>} />
+  if (route.mode === 'list') return <DataTable tableId="administration-approval-centre" caption="Approval Centre" columns={columns} rows={records} rowId={item => item.id} state={loading ? 'loading' : error ? 'error' : 'ready'} error={error} onRetry={() => { void reload() }} onRefresh={() => { void reload() }} filters={item => statusFilter === 'all' || item.status === statusFilter} filterControls={<div className="amafh-managed-filters"><SelectField label="Status" value={statusFilter} onValueChange={setStatusFilter} options={[{ value: "all", label: "All statuses" }, { value: "pending", label: "Pending" }, { value: "approved", label: "Approved" }, { value: "rejected", label: "Rejected" }]} /></div>} rowActions={item => <Button variant="secondary" size="compact" onClick={() => onNavigate(detailPath(item.id))}>View</Button>} />
   if (loading) return <WorkspaceState kind="loading" title="Loading request" />
   if (error) return <WorkspaceState kind="error" title="Could not load request" description={error} action={<Button onClick={() => { void reload() }}>Try again</Button>} />
   if (route.mode === 'create') return <ApprovalForm records={records} onCancel={() => onNavigate(base)} onSave={async draft => { const created = await repository.create(draft); setRecords(current => [...current, created]); onNavigate(detailPath(created.id)) }} />

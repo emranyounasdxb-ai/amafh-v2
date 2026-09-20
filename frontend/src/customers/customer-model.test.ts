@@ -43,7 +43,7 @@ test('existing customer attachment is one-to-many, edit persists, and deletion p
   const updated = await mockCustomerRepository.update(first.id, first, 'inactive', 'sample-aisha')
   expect(updated.status).toBe('inactive')
   expect(updated.history.at(-1)?.label).toBe('Status changed to inactive')
-  await expect(mockCustomerRepository.remove(first.id, 'sample-aisha')).rejects.toThrow(/related Applications\/Cases depend/)
+  await expect(mockCustomerRepository.remove(first.id, 'sample-aisha')).rejects.toThrow(/related Cases depend/)
   expect((await mockCustomerRepository.list()).some(item => item.id === first.id)).toBe(true)
   const noApps = (await mockCustomerRepository.list()).find(item => item.id === 'sample-individual-2')!
   await mockCustomerRepository.remove(noApps.id, 'sample-aisha')
