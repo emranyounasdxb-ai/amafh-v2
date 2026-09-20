@@ -72,6 +72,8 @@ jobs:
         run: pnpm run build
       - name: Integration tests
         working-directory: backend
+        env:
+          PROFILE_MEDIA_ROOT: ${{ runner.temp }}/amafh-profile-media
         run: python tests/run_integration_suite.py
       - name: E2E browser tests
         working-directory: frontend
