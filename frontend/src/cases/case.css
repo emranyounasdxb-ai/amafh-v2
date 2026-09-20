@@ -1,0 +1,8 @@
+.amafh-case-actor { margin-bottom: var(--space-5, 20px); max-width: 540px; }
+.amafh-case-actor p { color: var(--color-text-muted, #667085); font-size: .875rem; margin: 8px 0; }
+.amafh-case-filters, .amafh-case-actions, .amafh-case-form { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-3, 12px); }
+.amafh-case-filters label { display: grid; gap: 4px; font-size: .875rem; }
+.amafh-case-filters select { min-height: 38px; max-width: 100%; }
+.amafh-case-actions .amafh-field, .amafh-case-form .amafh-field { min-width: min(100%, 220px); flex: 1 1 220px; }
+.amafh-case-error { color: var(--color-danger, #b42318); }
+@media (max-width: 600px) { .amafh-case-actions > button, .amafh-case-filters label { width: 100%; } .amafh-case-form { display: grid; grid-template-columns: minmax(0, 1fr); } }

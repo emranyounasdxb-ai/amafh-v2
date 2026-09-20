@@ -1,0 +1,8 @@
+.amafh-page-header { display: flex; flex-direction: column; gap: var(--amafh-space-2); min-width: 0; }
+.amafh-page-header__breadcrumb { color: var(--amafh-color-text-muted); font: 400 12px/18px var(--amafh-font-body); }
+.amafh-page-header__row { display: flex; align-items: center; justify-content: space-between; gap: var(--amafh-space-4); min-height: 84px; padding: var(--amafh-space-4) 0; }
+.amafh-page-header__copy { min-width: 0; }
+.amafh-page-header__copy h1, .amafh-page-header__copy p { margin: 0; }
+.amafh-page-header__copy p { margin-top: var(--amafh-space-1); color: var(--amafh-color-text-secondary); font: 400 13px/20px var(--amafh-font-body); }
+.amafh-page-header__actions { display: flex; align-items: center; gap: var(--amafh-space-2); flex-wrap: wrap; }
+@media (max-width: 767px) { .amafh-page-header__row { align-items: stretch; flex-direction: column; } .amafh-page-header__actions { width: 100%; } }

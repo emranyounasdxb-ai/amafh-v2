@@ -1,0 +1,128 @@
+name: AMAFH v2 pipeline
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      POSTGRES_USER: amafh_ci
+      POSTGRES_PASSWORD: ci-only-password
+      POSTGRES_DB: amafh_ci
+      POSTGRES_HOST: 127.0.0.1
+      REDIS_URL: redis://127.0.0.1:6379/0
+      TRUSTED_HOSTS: localhost,127.0.0.1,backend
+      CORS_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
+      SESSION_COOKIE_SECURE: false
+    services:
+      postgres:
+        image: postgres:18.4-alpine
+        env:
+          POSTGRES_USER: amafh_ci
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: amafh_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U amafh_ci -d amafh_ci"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+      redis:
+        image: redis:8.2-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.18.0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: 3.12.13
+      - name: Install dependencies
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.24.0 --activate
+          cd frontend && pnpm install --frozen-lockfile
+          cd ../backend && python -m pip install '.[test]'
+      - name: Lint and syntax
+        run: |
+          python scripts/lint_source.py
+          python -m compileall -q backend/app backend/tests
+      - name: TypeScript
+        working-directory: frontend
+        run: pnpm run typecheck
+      - name: Frontend tests
+        working-directory: frontend
+        run: pnpm test -- --run
+      - name: Backend tests
+        working-directory: backend
+        run: python -m pytest -q
+      - name: Production build
+        working-directory: frontend
+        run: pnpm run build
+      - name: Integration tests
+        working-directory: backend
+        run: python tests/run_integration_suite.py
+      - name: E2E browser tests
+        working-directory: frontend
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:5181
+        run: |
+          pnpm exec playwright install --with-deps chromium
+          VITE_AUTH_PROVIDER=mock pnpm run build
+          pnpm exec vite preview --host 127.0.0.1 --port 5181 > /tmp/amafh-preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:5181/ >/dev/null && break || sleep 1; done
+          pnpm exec playwright test tests/administration.spec.ts tests/operations.spec.ts --workers=1
+      - name: Docker build
+        run: docker compose -f docker-compose.prod.yml build backend frontend
+
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    concurrency:
+      group: amafh-v2-production
+      cancel-in-progress: false
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Deploy after all checks
+        run: |
+          test -n "$DEPLOY_HOST" && test -n "$DEPLOY_USER" && test -n "$DEPLOY_PATH"
+          test -n "$DEPLOY_SSH_KEY" && test -n "$DEPLOY_KNOWN_HOSTS"
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+          rsync -az --exclude='.git' --exclude='.env' --exclude='node_modules' --exclude='dist' --exclude='.venv' ./ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" "cd '$DEPLOY_PATH' && docker compose -f docker-compose.prod.yml config --quiet && docker compose -f docker-compose.prod.yml up -d postgres redis && docker compose -f docker-compose.prod.yml build backend frontend && docker compose -f docker-compose.prod.yml run --rm backend alembic upgrade head && docker compose -f docker-compose.prod.yml up -d backend frontend nginx"
+
+  health_check:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: deploy
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      DEPLOY_HEALTH_URL: ${{ secrets.DEPLOY_HEALTH_URL }}
+    steps:
+      - name: Production readiness
+        run: |
+          test -n "$DEPLOY_HEALTH_URL"
+          curl --fail --show-error --silent --retry 6 --retry-delay 5 "$DEPLOY_HEALTH_URL/api/v1/health/ready"

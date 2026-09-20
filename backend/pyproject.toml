@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "amafh-v2-backend"
+version = "0.1.0"
+requires-python = ">=3.12,<3.15"
+dependencies = [
+  "fastapi==0.141.1",
+  "pydantic==2.13.5",
+  "pydantic-settings==2.15.0",
+  "SQLAlchemy==2.0.54",
+  "alembic==1.20.0",
+  "asyncpg==0.31.0",
+  "redis==8.1.0",
+  "uvicorn==0.53.0",
+  "Pillow==12.3.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1", "httpx==0.28.1", "httpx2==2.13.0"]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

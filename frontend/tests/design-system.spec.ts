@@ -1,0 +1,82 @@
+import { expect, test } from '@playwright/test'
+
+for (const width of [1440, 1024, 390]) {
+  test(`shared showcase at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/_design-system')
+    await expect(page.getByRole('heading', { name: 'AMAFH v2 design system' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Forms' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Extended controls' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Data table' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Analytics variants' })).toBeVisible()
+    if (process.env.CAPTURE_DESIGN_SYSTEM) {
+      await page.getByRole('heading', { name: 'Forms' }).locator('..').screenshot({ path: `test-results/forms-${width}.png` })
+      await page.getByRole('heading', { name: 'Extended controls' }).locator('..').screenshot({ path: `test-results/controls-${width}.png` })
+      await page.getByRole('heading', { name: 'Data table' }).locator('..').screenshot({ path: `test-results/table-${width}.png` })
+      await page.getByRole('heading', { name: 'Analytics variants' }).locator('..').screenshot({ path: `test-results/analytics-${width}.png` })
+      await page.getByRole('heading', { name: 'File operation variants' }).locator('..').screenshot({ path: `test-results/files-${width}.png` })
+    }
+    const combobox = page.getByRole('combobox', { name: 'Combobox' })
+    await combobox.fill('Option two')
+    await expect(page.getByRole('option', { name: 'Option two' })).toBeVisible()
+    await combobox.press('Enter')
+    await expect(combobox).toHaveValue('Option two')
+    await page.getByRole('button', { name: 'Two month date range' }).click()
+    await expect(page.getByRole('group', { name: 'Two month date range calendar' })).toBeVisible()
+    await page.getByRole('button', { name: 'Last 7 days' }).click()
+    await expect(page.getByRole('group', { name: 'Two month date range calendar' })).toHaveCount(0)
+    if (width === 390) {
+      await page.getByRole('button', { name: 'More table actions' }).click()
+      await expect(page.getByRole('menuitem', { name: 'Reset' })).toBeVisible()
+      await page.keyboard.press('Escape')
+    } else {
+      await expect(page.getByRole('button', { name: 'Reset' })).toBeVisible()
+    }
+    await page.getByRole('group', { name: 'Period view' }).getByRole('button', { name: 'Day' }).click()
+    await expect(page.getByRole('group', { name: 'Period view' }).getByRole('button', { name: 'Day' })).toHaveAttribute('aria-pressed', 'true')
+    await page.getByRole('button', { name: 'Increase value' }).click()
+    await expect(page.getByRole('spinbutton', { name: 'Value' })).toHaveValue('11')
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)
+    expect(overflow).toBe(false)
+  })
+}
+
+test('mobile shell navigation opens, traps focus, and closes with Escape', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/_design-system-shell')
+  await page.getByRole('button', { name: 'Open navigation' }).click()
+  const navigation = page.getByRole('dialog', { name: 'Application navigation' })
+  await expect(navigation).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Close navigation' }).first()).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(navigation).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Open navigation' })).toBeFocused()
+})
+
+test('command palette accepts keyboard input and Escape restores trigger', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/_design-system')
+  const trigger = page.getByRole('button', { name: 'Open command palette' })
+  await trigger.click()
+  const dialog = page.getByRole('dialog', { name: 'Command Palette' })
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByRole('textbox', { name: 'Search commands' })).toBeFocused()
+  await dialog.getByRole('textbox', { name: 'Search commands' }).fill('sample')
+  await expect(dialog.getByRole('button', { name: 'Apply' })).toBeEnabled()
+  await page.keyboard.press('Escape')
+  await expect(dialog).not.toBeVisible()
+  await expect(trigger).toBeFocused()
+})
+
+test('saved table views filter rows and expose create action', async ({ page }) => {
+  await page.goto('/_design-system')
+  await page.getByRole('button', { name: 'Saved view: All Records' }).click()
+  await expect(page.getByRole('menuitem', { name: 'Active Records Personal' })).toBeVisible()
+  await page.getByRole('menuitem', { name: 'Active Records Personal' }).click()
+  await expect(page.getByRole('button', { name: 'Saved view: Active Records' })).toBeVisible()
+  const table = page.getByRole('table', { name: 'Sample records' })
+  await expect(table.getByText('Sample record A')).toBeVisible()
+  await expect(table.getByText('Sample record B')).toHaveCount(0)
+  await page.getByRole('button', { name: 'Saved view: Active Records' }).click()
+  await expect(page.getByRole('menuitem', { name: 'Create saved view' })).toBeVisible()
+})

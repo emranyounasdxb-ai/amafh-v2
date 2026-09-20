@@ -1,0 +1,11 @@
+.amafh-login { min-height: 100vh; display: grid; place-items: center; padding: var(--amafh-space-6); background: var(--amafh-color-bg-canvas); }
+.amafh-login__content { width: min(100%, 420px); }
+.amafh-login__brand { display: block; margin-bottom: var(--amafh-space-6); color: var(--amafh-color-text-brand); font: 700 20px/28px var(--amafh-font-heading); text-align: center; }
+.amafh-login__card { padding: var(--amafh-space-8); }
+.amafh-login__card h1 { margin: 0; }
+.amafh-login__card > p { margin: var(--amafh-space-2) 0 var(--amafh-space-6); color: var(--amafh-color-text-secondary); font: 400 14px/20px var(--amafh-font-body); }
+.amafh-login__card form { display: grid; gap: var(--amafh-space-4); }
+.amafh-login__card form > .amafh-button { width: 100%; margin-top: var(--amafh-space-2); }
+.amafh-login__error { margin: 0; color: var(--amafh-color-text-danger); font: 400 13px/20px var(--amafh-font-body); }
+.amafh-login__note { margin: var(--amafh-space-4) 0 0; color: var(--amafh-color-text-muted); font: 400 12px/18px var(--amafh-font-body); text-align: center; }
+@media (max-width: 767px) { .amafh-login { padding: var(--amafh-space-4); } .amafh-login__card { padding: var(--amafh-space-5); } }

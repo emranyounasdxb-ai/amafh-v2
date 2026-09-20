@@ -1,0 +1,51 @@
+.amafh-date-field { position: relative; }
+.amafh-date-field__entry { position: relative; }
+.amafh-date-field__entry input { padding-right: 44px; }
+.amafh-date-field__entry button { position: absolute; right: 0; top: 0; display: grid; place-items: center; width: 36px; height: 36px; border: 0; background: transparent; color: var(--amafh-color-text-secondary); }
+.amafh-date-field__entry button:disabled { color: var(--amafh-color-text-disabled); }
+.amafh-calendar { position: absolute; z-index: 30; top: calc(100% + var(--amafh-space-1)); left: 0; width: min(352px, 100vw - 32px); padding: var(--amafh-space-4); border: 1px solid var(--amafh-color-border-default); border-radius: var(--amafh-radius-xl); background: var(--amafh-color-bg-surface-raised); box-shadow: var(--amafh-shadow-2); }
+.amafh-calendar__header { display: flex; align-items: center; justify-content: space-between; gap: var(--amafh-space-2); height: 40px; margin-bottom: var(--amafh-space-3); }
+.amafh-calendar__header strong { font: 600 16px/24px var(--amafh-font-heading); }
+.amafh-calendar__header button { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--amafh-color-border-default); border-radius: var(--amafh-radius-md); background: var(--amafh-color-bg-surface); color: var(--amafh-color-text-secondary); }
+.amafh-calendar__weekdays, .amafh-calendar__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
+.amafh-calendar__weekdays { height: 24px; color: var(--amafh-color-text-muted); font: 400 11px/16px var(--amafh-font-body); }
+.amafh-calendar__days { gap: var(--amafh-space-1); }
+.amafh-calendar__days button { display: grid; place-items: center; min-width: 0; height: 40px; border: 0; border-radius: var(--amafh-radius-calendar-day); background: transparent; color: var(--amafh-color-text-primary); font: 400 12px/18px var(--amafh-font-body); }
+.amafh-calendar__days button:hover:not(:disabled) { background: var(--amafh-color-bg-brand-subtle); }
+.amafh-calendar__days button[aria-pressed='true'] { background: var(--amafh-color-bg-brand); color: var(--amafh-color-text-on-brand); }
+.amafh-calendar__days button[aria-current='date']:not([aria-pressed='true']) { border: 1px solid var(--amafh-color-border-brand); }
+.amafh-calendar__days button:disabled, .amafh-calendar__outside { color: var(--amafh-color-text-muted); }
+@media (max-width: 767px) { .amafh-date-field__entry button { width: 44px; height: 44px; } .amafh-calendar { width: min(352px, calc(100vw - 32px)); } .amafh-calendar__days button { min-height: 40px; } }
+.amafh-date-range { min-width: 0; margin: 0; padding: 0; border: 0; }
+.amafh-date-range legend { margin-bottom: var(--amafh-space-2); }
+.amafh-date-range > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--amafh-space-3); }
+@media (max-width: 767px) { .amafh-date-range > div { grid-template-columns: 1fr; } }
+.amafh-range-calendar { position: relative; }
+.amafh-range-calendar__trigger { text-align: left; }
+.amafh-calendar--range { display: flex; gap: var(--amafh-space-3); width: min(calc(100vw - 32px), 644px); max-width: 644px; padding: 0; }
+.amafh-calendar--with-presets { width: min(calc(100vw - 32px), 800px); max-width: 800px; }
+.amafh-calendar__presets { display: flex; flex-direction: column; gap: var(--amafh-space-1); flex: 0 0 144px; padding: var(--amafh-space-4) var(--amafh-space-3); background: var(--amafh-color-bg-canvas); font: 400 12px/18px var(--amafh-font-body); }
+.amafh-calendar__presets strong { font-weight: 500; color: var(--amafh-color-text-secondary); }
+.amafh-calendar__presets button { min-height: 32px; padding: var(--amafh-space-2); border: 0; border-radius: var(--amafh-radius-sm); background: transparent; color: var(--amafh-color-text-primary); text-align: left; }
+.amafh-calendar__presets button:hover { background: var(--amafh-color-bg-brand-subtle); color: var(--amafh-color-text-brand); }
+.amafh-calendar__months { display: flex; gap: var(--amafh-space-3); flex: 1; min-width: 0; padding: var(--amafh-space-4); }
+.amafh-calendar__month { flex: 1; min-width: 0; }
+.amafh-calendar--range .amafh-calendar__month { padding: var(--amafh-space-3); border: 1px solid var(--amafh-color-border-default); border-radius: var(--amafh-radius-lg); background: var(--amafh-color-bg-surface); }
+.amafh-calendar--range .amafh-calendar__days { gap: 0; }
+.amafh-calendar--range .amafh-calendar__days button { height: 38px; }
+.amafh-calendar__days button[data-in-range='true'] { background: var(--amafh-color-bg-brand-subtle); color: var(--amafh-color-text-brand); }
+.amafh-calendar--range footer { display: flex; align-items: center; gap: var(--amafh-space-2); position: absolute; bottom: 0; right: 0; left: 0; padding: var(--amafh-space-3) var(--amafh-space-4); border-top: 1px solid var(--amafh-color-border-default); background: var(--amafh-color-bg-surface); font: 400 12px/18px var(--amafh-font-body); }
+.amafh-calendar--with-presets footer { left: 144px; }
+.amafh-calendar--range footer span { flex: 1; }
+.amafh-calendar--range { padding-bottom: 62px; }
+.amafh-month-year, .amafh-date-time { margin: 0; padding: 0; border: 0; min-width: 0; }
+.amafh-month-year { max-width: 360px; }
+.amafh-month-year__header { display: flex; align-items: center; justify-content: space-between; margin: var(--amafh-space-2) 0; }
+.amafh-month-year__nav { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: var(--amafh-radius-md); background: transparent; color: var(--amafh-color-text-secondary); }
+.amafh-month-year__nav:hover:not(:disabled) { background: var(--amafh-color-bg-brand-subtle); }
+.amafh-month-year__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--amafh-space-2); }
+.amafh-month-year__grid button { min-height: 40px; border: 1px solid var(--amafh-color-border-default); border-radius: var(--amafh-radius-md); background: var(--amafh-color-bg-surface); color: var(--amafh-color-text-primary); }
+.amafh-month-year__grid button[aria-pressed='true'] { background: var(--amafh-color-bg-brand); border-color: var(--amafh-color-border-brand); color: var(--amafh-color-text-on-brand); }
+.amafh-date-time > div { display: grid; grid-template-columns: minmax(0, 252px) minmax(0, 160px); gap: var(--amafh-space-3); }
+.amafh-date-time input[type='time']::-webkit-calendar-picker-indicator { display: none; }
+@media (max-width: 767px) { .amafh-calendar--range { flex-direction: column; left: 50%; transform: translateX(-50%); max-height: 80vh; overflow: auto; padding-bottom: 0; } .amafh-calendar__presets { flex-basis: auto; flex-direction: row; flex-wrap: wrap; } .amafh-calendar__months { display: block; } .amafh-calendar__month:nth-child(2) { display: none; } .amafh-calendar--range footer { position: static; flex-wrap: wrap; } .amafh-date-time > div { grid-template-columns: 1fr; } .amafh-month-year__grid button { min-height: 44px; } }

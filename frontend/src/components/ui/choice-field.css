@@ -1,0 +1,15 @@
+.amafh-choice { position: relative; }
+.amafh-choice__entry { display: flex; align-items: center; gap: var(--amafh-space-1); width: 100%; min-height: 44px; padding: 0 var(--amafh-space-3); border: 1px solid var(--amafh-color-border-default); border-radius: var(--amafh-radius-md); background: var(--amafh-color-bg-surface); }
+.amafh-choice__entry:focus-within { border: 2px solid var(--amafh-color-border-focus); }
+.amafh-choice__entry[data-invalid='true'] { border-color: var(--amafh-color-border-danger); }
+.amafh-choice__entry[data-disabled='true'] { background: var(--amafh-color-bg-disabled); }
+.amafh-choice__entry input { flex: 1 1 56px; min-width: 56px; width: 100%; border: 0; outline: 0; background: transparent; color: var(--amafh-color-text-primary); font: 400 14px/20px var(--amafh-font-body); }
+.amafh-choice__entry input::placeholder { color: var(--amafh-color-text-muted); }
+.amafh-choice__toggle, .amafh-choice__chip button { display: inline-grid; place-items: center; flex: 0 0 auto; border: 0; background: transparent; color: var(--amafh-color-text-secondary); }
+.amafh-choice__toggle { width: 24px; height: 32px; }
+.amafh-choice__list { position: absolute; z-index: 60; top: calc(100% + var(--amafh-space-1)); width: 100%; max-height: 240px; overflow: auto; padding: var(--amafh-space-1); border: 1px solid var(--amafh-color-border-default); border-radius: var(--amafh-radius-md); background: var(--amafh-color-bg-surface-raised); box-shadow: var(--amafh-shadow-2); }
+.amafh-choice__option { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 36px; padding: 0 var(--amafh-space-3); border: 0; border-radius: var(--amafh-radius-sm); background: transparent; color: var(--amafh-color-text-primary); text-align: left; font: 400 13px/20px var(--amafh-font-body); }
+.amafh-choice__option[data-active='true'], .amafh-choice__option:hover { background: var(--amafh-color-bg-brand-subtle); color: var(--amafh-color-text-brand); }
+.amafh-choice__option:disabled { color: var(--amafh-color-text-disabled); }
+.amafh-choice__state { margin: 0; padding: var(--amafh-space-3); color: var(--amafh-color-text-secondary); font: 400 12px/18px var(--amafh-font-body); }
+@media (max-width: 767px) { .amafh-choice__option { min-height: 44px; } }

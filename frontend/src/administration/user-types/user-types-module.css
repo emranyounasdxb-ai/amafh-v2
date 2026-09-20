@@ -1,0 +1,7 @@
+.amafh-user-types-form, .amafh-user-types-detail { display: grid; gap: var(--amafh-space-4); min-width: 0; }
+.amafh-user-types-form__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--amafh-space-4); }
+.amafh-user-types-form__wide { grid-column: 1 / -1; }
+.amafh-user-types-form__actions { display: flex; justify-content: flex-end; gap: var(--amafh-space-2); flex-wrap: wrap; }
+.amafh-user-types-form__error { margin: 0; color: var(--amafh-color-text-danger); font: 400 13px/20px var(--amafh-font-body); }
+.amafh-user-types-detail .amafh-profile__actions { flex-wrap: wrap; }
+@media (max-width: 767px) { .amafh-user-types-form__fields { grid-template-columns: minmax(0, 1fr); } .amafh-user-types-form__wide { grid-column: auto; } .amafh-user-types-form__actions > .amafh-button { flex: 1; } }

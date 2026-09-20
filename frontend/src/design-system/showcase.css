@@ -1,0 +1,9 @@
+.amafh-showcase { display: grid; gap: var(--amafh-space-6); }
+.amafh-showcase > section { display: grid; gap: var(--amafh-space-4); min-width: 0; padding: var(--amafh-space-5); background: var(--amafh-color-bg-surface); border: 1px solid var(--amafh-color-border-default); border-radius: var(--amafh-radius-xl); }
+.amafh-showcase h2, .amafh-showcase p { margin: 0; }
+.amafh-showcase__row { display: flex; align-items: center; gap: var(--amafh-space-3); flex-wrap: wrap; }
+.amafh-showcase__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--amafh-space-4); }
+.amafh-showcase__swatches { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--amafh-space-3); }
+.amafh-showcase__swatches > div { padding: var(--amafh-space-2); border: 1px solid var(--amafh-color-border-default); border-radius: var(--amafh-radius-md); font: 400 12px/18px var(--amafh-font-body); }
+.amafh-showcase__swatches > div > div { height: 56px; margin-bottom: var(--amafh-space-2); border-radius: var(--amafh-radius-sm); }
+@media (max-width: 767px) { .amafh-showcase__grid { grid-template-columns: 1fr; } .amafh-showcase__swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
