@@ -1,10 +1,21 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
-import { Bell, Menu, X } from 'lucide-react'
+import { BadgeDollarSign, Bell, BriefcaseBusiness, ChartNoAxesCombined, CircleUserRound, LayoutDashboard, ListChecks, Menu, Settings, Users, X } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { Avatar } from '../ui/avatar'
-import navDot from './assets/nav-dot.svg'
-import navDotActive from './assets/nav-dot-active.svg'
 import './application-shell.css'
+
+const navigationIcons: Record<string, LucideIcon> = {
+  dashboard: LayoutDashboard,
+  customers: Users,
+  cases: BriefcaseBusiness,
+  administration: Settings,
+  notifications: Bell,
+  tasks: ListChecks,
+  finance: BadgeDollarSign,
+  reports: ChartNoAxesCombined,
+  profile: CircleUserRound,
+}
 
 export interface NavigationItem { id: string; label: string; ariaLabel?: string; icon?: ReactNode; href?: string; disabled?: boolean }
 export interface ApplicationShellProps {
@@ -21,7 +32,7 @@ export interface ApplicationShellProps {
   children: ReactNode
 }
 
-export function ApplicationShell({ brand = 'AMAFH v2', compactBrand = 'A', mobileBrand = 'AMAFH', headerTitle = 'Workspace', items, activeId, onNavigate, search, notifications, account, children }: ApplicationShellProps) {
+export function ApplicationShell({ brand = <img src="/brand/amafh-core-full-logo-exact.svg" alt="AMAFH" width="1551" height="479" />, compactBrand = <img src="/brand/amafh-core-mark-exact.svg" alt="AMAFH" width="801" height="908" />, mobileBrand = <img src="/brand/amafh-core-mark-exact.svg" alt="AMAFH" width="801" height="908" />, headerTitle = 'Workspace', items, activeId, onNavigate, search, notifications, account, children }: ApplicationShellProps) {
   const [desktopCollapsed, setDesktopCollapsed] = useState(false)
   const [tabletExpanded, setTabletExpanded] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -58,10 +69,11 @@ export function ApplicationShell({ brand = 'AMAFH v2', compactBrand = 'A', mobil
   const navigate = (id: string) => { onNavigate?.(id); setMobileOpen(false) }
   const navContent = items.map(item => {
     const current = activeId === item.id
-    const icon = item.icon ?? <img className="amafh-shell__nav-dot" src={current ? navDotActive : navDot} alt="" />
+    const Icon = navigationIcons[item.id]
+    const icon = item.icon ?? (Icon ? <Icon size={20} strokeWidth={1.75} aria-hidden="true" /> : null)
     return item.href
-      ? <a key={item.id} href={item.href} aria-label={item.ariaLabel ?? item.label} aria-current={current ? 'page' : undefined} aria-disabled={item.disabled || undefined} tabIndex={item.disabled ? -1 : undefined} className="amafh-shell__nav-item" onClick={event => { if (item.disabled) event.preventDefault(); else navigate(item.id) }} title={item.label}>{icon}<span>{item.label}</span></a>
-      : <button key={item.id} type="button" aria-label={item.ariaLabel ?? item.label} disabled={item.disabled} aria-current={current ? 'page' : undefined} className="amafh-shell__nav-item" onClick={() => navigate(item.id)} title={item.label}>{icon}<span>{item.label}</span></button>
+      ? <a key={item.id} href={item.href} aria-label={item.ariaLabel ?? item.label} aria-current={current ? 'page' : undefined} aria-disabled={item.disabled || undefined} tabIndex={item.disabled ? -1 : undefined} className="amafh-shell__nav-item" data-tooltip={item.label} onClick={event => { if (item.disabled) event.preventDefault(); else navigate(item.id) }}>{icon}<span>{item.label}</span></a>
+      : <button key={item.id} type="button" aria-label={item.ariaLabel ?? item.label} disabled={item.disabled} aria-current={current ? 'page' : undefined} className="amafh-shell__nav-item" data-tooltip={item.label} onClick={() => navigate(item.id)}>{icon}<span>{item.label}</span></button>
   })
 
   return <div className={`amafh-shell ${desktopCollapsed ? 'amafh-shell--desktop-collapsed' : ''} ${tabletExpanded ? 'amafh-shell--tablet-expanded' : ''} ${mobileOpen ? 'amafh-shell--mobile-open' : ''}`}>

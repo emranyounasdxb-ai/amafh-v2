@@ -11,7 +11,7 @@ import { apiProfileImagesRepository } from './profile-images'
 import { useOptionalAuth } from '../auth/auth-context'
 import './operations.css'
 
-export function ProfilePage({ path }: { path: string }) {
+export function ProfilePage({ path, section = '' }: { path: string; section?: string }) {
   const apiMode = import.meta.env.MODE !== 'test' && import.meta.env.VITE_AUTH_PROVIDER !== 'mock'
   const auth = useOptionalAuth()
   const preview = usePermissionPreview()
@@ -23,6 +23,10 @@ export function ProfilePage({ path }: { path: string }) {
   const [imagesLoading, setImagesLoading] = useState(false)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<{ kind: ProfileImageKind; file: File; preview: string } | null>(null)
+  const [progress, setProgress] = useState(0)
+  const [message, setMessage] = useState('')
+  useEffect(() => { if (section === 'avatar' || section === 'banner') document.getElementById(`profile-${section}`)?.scrollIntoView({ block: 'nearest' }) }, [section, imagesLoading])
   useEffect(() => {
     if (!apiMode || !preview.can('Users', 'view')) return
     void fetch('/api/v1/auth/users', { credentials: 'include' }).then(async response => {
@@ -41,17 +45,25 @@ export function ProfilePage({ path }: { path: string }) {
   }, [targetId])
   const target = apiMode ? (apiUsers.find(item => item.id === targetId) ?? (targetId === auth?.user?.id && auth.user ? { id: auth.user.id, fullName: auth.user.name } : targetId ? { id: targetId, fullName: targetId } : null)) : preview.users.find(item => item.id === targetId)
   const canEdit = Boolean((apiMode ? auth?.user?.id : preview.actorId) && target && ((apiMode ? auth?.user?.id : preview.actorId) === targetId || preview.can('Profiles', 'edit-other-images')))
-  const upload = async (kind: ProfileImageKind, file?: File) => {
-    if (!file || !targetId || !canEdit) return
-    setBusy(true); setError('')
-    try { setImages(apiMode ? await apiProfileImagesRepository.save(targetId, kind, file) : await profileImagesRepository.save(targetId, kind, await validateProfileImage(file), preview.actorId)) }
-    catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not save image.') }
+  const choose = async (kind: ProfileImageKind, file?: File) => {
+    if (!file) return
+    setError(''); setMessage(''); setSelectedFile(null)
+    try { setSelectedFile({ kind, file, preview: await validateProfileImage(file) }) }
+    catch (cause) { setError(cause instanceof Error ? cause.message : 'Invalid image.') }
+  }
+  const upload = async (kind: ProfileImageKind) => {
+    if (!selectedFile || selectedFile.kind !== kind || !targetId || !canEdit) return
+    setBusy(true); setError(''); setMessage(''); setProgress(0)
+    try {
+      setImages(apiMode ? await apiProfileImagesRepository.save(targetId, kind, selectedFile.file, setProgress) : await profileImagesRepository.save(targetId, kind, selectedFile.preview, preview.actorId))
+      setProgress(100); setSelectedFile(null); setMessage(`${kind === 'avatar' ? 'Avatar' : 'Banner'} updated.`)
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not save image.') }
     finally { setBusy(false) }
   }
   const remove = async (kind: ProfileImageKind) => {
     if (!canEdit) return
-    setBusy(true); setError('')
-    try { setImages(apiMode ? await apiProfileImagesRepository.remove(targetId, kind) : await profileImagesRepository.remove(targetId, kind, preview.actorId)) }
+    setBusy(true); setError(''); setMessage('')
+    try { setImages(apiMode ? await apiProfileImagesRepository.remove(targetId, kind) : await profileImagesRepository.remove(targetId, kind, preview.actorId)); setMessage(`${kind === 'avatar' ? 'Avatar' : 'Banner'} removed.`) }
     catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not remove image.') }
     finally { setBusy(false) }
   }
@@ -59,10 +71,11 @@ export function ProfilePage({ path }: { path: string }) {
     <PermissionActor preview={preview} />
     {preview.loading ? <WorkspaceState kind="loading" title="Loading Users" /> : preview.error ? <WorkspaceState kind="error" title="Could not load Users" description={preview.error} action={<Button onClick={() => { void preview.reload() }}>Try again</Button>} /> : <div className="amafh-ops-grid">
       {!routeTarget && (apiMode ? apiUsers.length > 0 : true) && <SelectField label="User profile" value={targetId} onValueChange={setSelectedId} options={(apiMode ? apiUsers : preview.users).map(user => ({ value: user.id, label: user.fullName }))} />}
-      {!target ? <WorkspaceState kind="empty" title="User not found" /> : imagesLoading ? <WorkspaceState kind="loading" title="Loading profile images" /> : <><FormSection title={`${target.fullName} · Avatar`}><div className="amafh-ops-fields">{images.avatar ? <img className="amafh-ops-image" src={images.avatar} alt={`${target.fullName} avatar`} /> : <p>No avatar uploaded.</p>}{canEdit && <div><label>Upload avatar <input aria-label="Upload avatar" type="file" accept="image/png,image/jpeg,image/webp" disabled={busy} onChange={event => { void upload('avatar', event.target.files?.[0]) }} /></label>{images.avatar && <Button variant="secondary" disabled={busy} onClick={() => { void remove('avatar') }}>Remove avatar</Button>}</div>}</div></FormSection>
-      <FormSection title={`${target.fullName} · Banner`}><div className="amafh-ops-grid">{images.banner ? <img className="amafh-ops-banner" src={images.banner} alt={`${target.fullName} banner`} /> : <p>No banner uploaded.</p>}{canEdit && <div className="amafh-ops-actions"><label>Upload banner <input aria-label="Upload banner" type="file" accept="image/png,image/jpeg,image/webp" disabled={busy} onChange={event => { void upload('banner', event.target.files?.[0]) }} /></label>{images.banner && <Button variant="secondary" disabled={busy} onClick={() => { void remove('banner') }}>Remove banner</Button>}</div>}</div></FormSection></>}
+      {!target ? <WorkspaceState kind="empty" title="User not found" /> : imagesLoading ? <WorkspaceState kind="loading" title="Loading profile images" /> : <><section id="profile-avatar"><FormSection title={`${target.fullName} · Avatar`}><div className="amafh-ops-fields">{selectedFile?.kind === 'avatar' ? <img className="amafh-ops-image" src={selectedFile.preview} alt="Selected avatar preview" /> : images.avatar ? <img className="amafh-ops-image" src={images.avatar} alt={`${target.fullName} avatar`} /> : <p>No avatar uploaded.</p>}{canEdit && <div><label>Choose avatar <input aria-label="Upload avatar" type="file" accept="image/png,image/jpeg,image/webp" disabled={busy} onChange={event => { void choose('avatar', event.target.files?.[0]) }} /></label>{selectedFile?.kind === 'avatar' && <Button disabled={busy} onClick={() => { void upload('avatar') }}>Save avatar</Button>}{images.avatar && <Button variant="secondary" disabled={busy} onClick={() => { void remove('avatar') }}>Remove avatar</Button>}</div>}</div></FormSection></section>
+      <section id="profile-banner"><FormSection title={`${target.fullName} · Banner`}><div className="amafh-ops-grid">{selectedFile?.kind === 'banner' ? <img className="amafh-ops-banner" src={selectedFile.preview} alt="Selected banner preview" /> : images.banner ? <img className="amafh-ops-banner" src={images.banner} alt={`${target.fullName} banner`} /> : <p>No banner uploaded.</p>}{canEdit && <div className="amafh-ops-actions"><label>Choose banner <input aria-label="Upload banner" type="file" accept="image/png,image/jpeg,image/webp" disabled={busy} onChange={event => { void choose('banner', event.target.files?.[0]) }} /></label>{selectedFile?.kind === 'banner' && <Button disabled={busy} onClick={() => { void upload('banner') }}>Save banner</Button>}{images.banner && <Button variant="secondary" disabled={busy} onClick={() => { void remove('banner') }}>Remove banner</Button>}</div>}</div></FormSection></section></>}
       {!canEdit && target && <p>Editing another user's images requires Profiles: edit-other-images permission.</p>}
       {error && <p role="alert" className="amafh-case-error">{error}</p>}
+      {busy && <p role="status">Uploading… {progress}%</p>}{message && <p role="status">{message}</p>}
     </div>}
   </Workspace>
 }

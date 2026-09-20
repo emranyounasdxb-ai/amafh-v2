@@ -1,8 +1,9 @@
 import { Workspace, DashboardGrid } from '../templates/workspace'
-import { Slot, TemplateBreadcrumb } from './shared'
+import { Slot } from './shared'
+import { Breadcrumb } from '../components/navigation/breadcrumb'
 
 export function DashboardPage() {
-  return <Workspace title="Dashboard" description="Dashboard grid template" breadcrumb={<TemplateBreadcrumb current="Dashboard" />}>
+  return <Workspace title="Dashboard" description="Overview" breadcrumb={<Breadcrumb items={[{ label: 'Dashboard' }]} />}>
     <div className="amafh-route-dashboard"><DashboardGrid>
       {[1, 2, 3, 4].map(index => <Slot key={index} title={`KPI slot ${index}`} className="amafh-route-slot--kpi"><span>Metric placeholder</span></Slot>)}
       <Slot title="Primary widget slot 1" className="amafh-route-slot--widget"><div className="amafh-route-slot__placeholder" /></Slot>

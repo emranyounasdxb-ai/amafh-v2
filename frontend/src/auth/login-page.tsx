@@ -24,7 +24,7 @@ export function LoginPage() {
   }
 
   return <main className="amafh-login"><div className="amafh-login__content">
-    <strong className="amafh-login__brand">AMAFH v2</strong>
+    <img className="amafh-login__brand" src="/brand/amafh-core-full-logo-exact.svg" alt="AMAFH" width="1551" height="479" />
     <Card className="amafh-login__card"><h1 className="amafh-h2">Sign in</h1><p>Open the application templates.</p>
       <form onSubmit={event => { void submit(event) }}>
         <TextField label="Email" type="email" name="email" autoComplete="username" required value={email} onChange={event => setEmail(event.target.value)} />
